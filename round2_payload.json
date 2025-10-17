@@ -1,0 +1,19 @@
+{
+  "email": "24f1001676@ds.study.iitm.ac.in",
+  "secret": "Subbu121",
+  "task": "markdown-to-html-001_a",
+  "round": 2,
+  "nonce": "def456",
+  "brief": "Add tabs #markdown-tabs that switch between rendered HTML in #markdown-output and the original Markdown in #markdown-source while keeping content in sync.",
+  "checks": [
+    "There are at least 2 buttons in #markdown-tabs",
+    "Content in #markdown-source is not empty"
+  ],
+  "evaluation_url": "https://example.com/evaluate",
+  "attachments": [
+    {
+      "name": "input.md",
+      "url": "data:text/markdown;base64,IyBIZWxsbyBXb3JsZCAhCgpUaGlzIGlzIGEgIHRlc3QgTWFya2Rvd24gZG9jdW1lbnQu"
+    }
+  ]
+}
