@@ -22,21 +22,17 @@ It receives a brief from a remote API, uses a Large Language Model to generate c
 ├── main.py # FastAPI backend for the automation
 
 ├── requirements.txt # Python dependencies
-
+ALSO INCLUDED DOCKER FILE ALSO 
 ├── README.md # Project documentation
 
 ├── .env # Environment variables (not committed)
 
 
-└── generated_tasks/ # Auto-generated task folders
-
----
-
 ## ⚙️ Setup Instructions
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/<YOUR_USERNAME>/TDS_P1_SEP_2025.git
+git clone https://github.com/<PAVAN>/TDS_P1_SEP_2025.git
 cd TDS_P1_SEP_2025
 ### 2️⃣ Install Dependencies
 pip install -r requirements.txt
