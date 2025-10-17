@@ -1,42 +1,52 @@
 # 🧠 LLM App Builder & Deployer
 
-This project is a **FastAPI-based automation service** that can build, deploy, and update web applications automatically using **LLMs (Gemini / GPT)** and **GitHub Pages**.
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&logoColor=white)
+![GitHub Pages](https://img.shields.io/badge/Deploy-GitHub%20Pages-327FC7?style=for-the-badge&logo=github&logoColor=white)
+![LLM](https://img.shields.io/badge/Powered%20by-LLM%20(Gemini%20%2F%20GPT)-purple?style=for-the-badge)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-It receives a brief from a remote API, uses a Large Language Model to generate code files, creates a GitHub repository, deploys it via GitHub Pages, and notifies an evaluation server when done.
+> A **FastAPI-based automation service** that can build, deploy, and update web applications automatically using **LLMs (Gemini / GPT)** and **GitHub Pages**.
+
+It receives a project brief via a POST request, uses an LLM to generate the application code, creates a GitHub repository, deploys it on GitHub Pages, and notifies an evaluation server when complete.
 
 ---
 
 ## 🚀 Features
-- **FastAPI endpoint** to receive task briefs (`/api-endpoint`)
-- **Secret verification** for secure requests
-- **LLM integration** (Gemini or GPT) to generate web app code from natural language
-- **Automatic GitHub repo creation**
-- **GitHub Pages deployment**
-- **Evaluation callback** to the instructor’s server
-- **Update support** for Round 2 (regenerates and redeploys)
+
+- 📨 **FastAPI endpoint** to receive project briefs (`/api-endpoint`)
+- 🔐 **Secret verification** for authorized requests  
+- 🤖 **LLM integration** (Gemini or GPT) for app generation  
+- 🧩 **Automatic GitHub repo creation & push**
+- 🌐 **GitHub Pages deployment**
+- 🔁 **Update support** for Round 2 (smart regeneration)
+- 📬 **Evaluation callback** to instructor’s API with repo and live site details
 
 ---
 
 ## 🧩 Project Structure
-.
-├── main.py # FastAPI backend for the automation
 
+📦 TDS_P1_SEP_2025
+├── main.py # FastAPI backend for LLM-based app automation
 ├── requirements.txt # Python dependencies
-ALSO INCLUDED DOCKER FILE ALSO 
+├── Dockerfile # Container deployment file
 ├── README.md # Project documentation
+└── .env # Environment variables (excluded from Git)(here txt file to show only)
 
-├── .env # Environment variables (not committed)
 
+---
 
 ## ⚙️ Setup Instructions
 
-### 1️⃣ Clone the Repository
-```bash
-git clone https://github.com/<PAVAN>/TDS_P1_SEP_2025.git
+1️⃣ Clone the Repository
+
+git clone https://github.com/PAVAN2005-LAB/TDS_P1_SEP_2025.git
 cd TDS_P1_SEP_2025
-### 2️⃣ Install Dependencies
+
+2️⃣ Install Dependencies
+ 
 pip install -r requirements.txt
-###3️⃣ Create a .env File
+
+3️⃣ Create a .env File
 
 Add the following keys:
 
@@ -44,26 +54,23 @@ GEMINI_API_KEY=your_gemini_api_key
 GITHUB_TOKEN=your_github_pat
 GITHUB_USERNAME=your_github_username
 STUDENT_SECRET=your_secret_value
-💡 Your STUDENT_SECRET should match the one you submitted in the Google Form.
 
-###4️⃣ Run the API Server
+
+💡 The STUDENT_SECRET should match the one you submitted in the Google Form.
+
+4️⃣ Run the API Server
 uvicorn main:app --reload --port 8000
 
 
-This runs your endpoint locally at:
+The API will run locally at:
 
-http://127.0.0.1:8000/api-endpoint
+👉 http://127.0.0.1:8000/api-endpoint
 
-
-You can expose it to the internet using ngrok
-:
+To expose it publicly for testing, use:
 
 ngrok http 8000
 
-###🧠 Example Request
-
-Send a POST request to your API:
-
+🧠 Example Request
 curl -X POST https://<your-ngrok-url>/api-endpoint \
   -H "Content-Type: application/json" \
   -d '{
@@ -75,78 +82,115 @@ curl -X POST https://<your-ngrok-url>/api-endpoint \
     "nonce": "xyz123",
     "evaluation_url": "https://tds.project-server.edu/eval"
   }'
+🧩 What Happens Internally
 
-###🧩 What Happens Internally
-
-The request is received and validated.
-
-The brief is sent to Gemini / GPT for app generation.
-
-Files are saved and pushed to a new GitHub repository.
-
-GitHub Pages is enabled for deployment.
-
-A callback POST is sent to the evaluation URL with:
+1️⃣ The POST request is received and validated.
+2️⃣ The brief is sent to Gemini / GPT for code generation.
+3️⃣ Files are stored locally and pushed to a new GitHub repository.
+4️⃣ GitHub Pages is enabled for live deployment.
+5️⃣ A callback POST is sent to the evaluation URL containing:
 
 Repo URL
 
 Commit SHA
 
-Pages URL
+GitHub Pages URL
 
-###🔁 Round 2 (Update)
+🔁 Round 2 (Update Mode)
 
-When a new POST arrives with the same task and "round": 2,
-the system:
+When the same task is sent again with "round": 2:
 
-Pulls the previous repo
+The system pulls the previous repo.
 
-Generates updates via the LLM
+Generates updates using the LLM.
 
-Pushes changes
+Pushes changes and re-deploys.
 
-Re-deploys
+Sends an updated evaluation callback.
 
-Sends a second evaluation callback
+🧾 Example API Responses
 
-🧾 Example Response (from your endpoint)
+From your endpoint:
+
 {
   "status": "accepted"
 }
 
-📡 Example Evaluation Callback Payload
+
+Callback sent to evaluator:
+
 {
   "email": "student@example.com",
   "task": "captcha-solver-123",
   "round": 1,
   "nonce": "xyz123",
-  "repo_url": "https://github.com/YOUR_USERNAME/captcha-solver-123",
+  "repo_url": "https://github.com/PAVAN2005-LAB/captcha-solver-123",
   "commit_sha": "d41d8cd9",
-  "pages_url": "https://YOUR_USERNAME.github.io/captcha-solver-123/"
+  "pages_url": "https://pavan2005-lab.github.io/captcha-solver-123/"
 }
 
-###🧰 Tech Stack
-
-Python 3.10+
-
-FastAPI
-
-httpx
-
-dotenv
-
-OpenAI / Gemini API
-
-GitHub REST API
-
-AsyncIO
-
-###🧑‍💻 Author
+🧰 Tech Stack
+Technology	Purpose
+Python 3.10+	Core language
+FastAPI	REST backend
+httpx	Asynchronous HTTP client
+python-dotenv	Load environment variables
+Gemini / OpenAI API	LLM for code generation
+GitHub REST API	Repo creation + Pages deployment
+AsyncIO	Task concurrency
+Docker	Containerization for Hugging Face or local deploy
+🧑‍💻 Author
 
 Pavan Kumar Yadav
-3rd Year Engineering Student
-Project: TDS_P1_SEP_2025
+📘 Project: TDS_P1_SEP_2025
+🌐 GitHub: @PAVAN2005-LAB
+🧩 Example Generated Project
+Markdown → HTML Converter (FastAPI + Hugging Face)
+
+An example of an app generated by the LLM Builder & Deployer system.
+
+🔗 Repo: PAVAN2005-LAB/markdown-to-html-001
+
+🌍 Live Page: pavan2005-lab.github.io/markdown-to-html-001
+🚀 Project Overview
+
+This app converts Markdown text into HTML using FastAPI.
+It’s lightweight, fast, and perfect for automation pipelines.
+
+🧠 Features
+
+Converts Markdown to HTML instantly
+
+Simple FastAPI-based JSON API
+
+Deployed automatically on Hugging Face
+
+Fully open-source (MIT License)
+
+⚙️ How It Works
+@app.post("/convert")
+async def convert_markdown(request: Request):
+    data = await request.json()
+    md_text = data.get("markdown", "")
+    html_output = markdown.markdown(md_text)
+    return JSONResponse(content={"html": html_output})
 
 
----
+📥 Input:
 
+{ "markdown": "# Hello World\nThis is a **bold** example." }
+
+
+📤 Output:
+
+{ "html": "<h1>Hello World</h1><p>This is a <strong>bold</strong> example.</p>" }
+
+🧪 Try It Yourself
+Swagger UI:
+
+🔗 https://pavan2005-lab-markdown-to-html-001.hf.space/docs
+
+Via cURL:
+curl -X POST https://pavan2005-lab-markdown-to-html-001.hf.space/convert \
+  -H "Content-Type: application/json" \
+  -d '{"markdown": "# Title\n**Bold Text**"}'
