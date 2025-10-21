@@ -39,6 +39,7 @@ if not settings.GITHUB_PAGES_BASE:
     settings.GITHUB_PAGES_BASE = f"https://{settings.GITHUB_USERNAME}.github.io"
 
 # ------------------------- Logging -------------------------
+
 os.makedirs(os.path.dirname(settings.LOG_FILE_PATH), exist_ok=True)
 logger = logging.getLogger("task_receiver")
 logger.setLevel(logging.INFO)
@@ -65,6 +66,7 @@ def flush_logs():
         pass
 
 # ------------------------- Models -------------------------
+
 class Attachment(BaseModel):
     name: str
     url: str  # data URI or http(s) url
@@ -80,6 +82,7 @@ class TaskRequest(BaseModel):
     attachments: List[Attachment] = []
 
 # ------------------------- App & Globals -------------------------
+
 app = FastAPI(title="Automated Task Receiver & Processor", description="LLM-driven code generation and deployment")
 background_tasks_list: List[asyncio.Task] = []
 task_semaphore = asyncio.Semaphore(settings.MAX_CONCURRENT_TASKS)
@@ -87,6 +90,7 @@ last_received_task: Optional[dict] = None
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent"
 
 # ------------------------- Utility -------------------------
+
 def verify_secret(secret_from_request: str) -> bool:
     # Strip any whitespace or newlines from both sides
     return secret_from_request.strip() == settings.STUDENT_SECRET.strip()
@@ -110,6 +114,7 @@ def remove_local_path(path: str):
     flush_logs()
 
 # ------------------------- Attachment helpers -------------------------
+
 def is_image_data_uri(data_uri: str) -> bool:
     if not data_uri or not data_uri.startswith("data:"):
         return False
@@ -149,6 +154,8 @@ async def attachment_to_gemini_part(attachment_url: str) -> Optional[dict]:
     return None
 
 # ------------------------- Filesystem Save Helpers -------------------------
+
+
 async def save_generated_files_locally(task_id: str, files: dict) -> str:
     base_dir = os.path.join(os.getcwd(), "generated_tasks")
     task_dir = os.path.join(base_dir, task_id)
@@ -200,6 +207,8 @@ async def save_attachments_locally(task_dir: str, attachments: List[Attachment])
     return saved_files
 
 # ------------------------- GitHub helpers -------------------------
+
+
 async def setup_local_repo(local_path: str, repo_name: str, repo_url_auth: str, repo_url_http: str, round_index: int) -> git.Repo:
     github_token = settings.GITHUB_TOKEN
     headers = {
@@ -286,7 +295,8 @@ async def commit_and_publish(repo: git.Repo, task_id: str, round_index: int, rep
             logger.exception("GitHub API error during deployment.")
             raise
 
-# ------------------------- Gemini / LLM helpers -------------------------
+# ------------------------- Gemini / LLM helpers ------------------------- or you can use any LLM MODELS  just change there api key
+
 async def call_gemini_api(contents: list, system_prompt: str, response_schema: dict, max_retries: int = 3, timeout: int = 60) -> dict:
     payload = {
         "contents": contents,
@@ -651,7 +661,11 @@ async def get_logs(lines: int = Query(200, ge=1, le=5000)):
     except Exception as e:
         logger.exception(f"Error reading log file: {e}")
         return PlainTextResponse(f"Error reading log file: {e}", status_code=500)
-# ---------- DEBUG SECRET ----------
+
+
+
+
+# ---------- DEBUG SECRET ----------  you can delect this part 
 @app.get("/debug-secret")
 async def debug_secret():
     return {"server_secret": settings.STUDENT_SECRET}
@@ -680,3 +694,4 @@ async def shutdown_event():
                 pass
     await asyncio.sleep(0.5)
     flush_logs()
+
