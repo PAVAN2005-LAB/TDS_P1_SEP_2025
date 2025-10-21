@@ -13,75 +13,73 @@ It receives a project brief via a POST request, uses an LLM to generate the appl
 
 ## 🚀 Features
 
-- 📨 **FastAPI endpoint** to receive project briefs (`/api-endpoint`)
+- 📨 **FastAPI endpoint** to receive project briefs (`/api-endpoint`)  
 - 🔐 **Secret verification** for authorized requests  
 - 🤖 **LLM integration** (Gemini or GPT) for app generation  
-- 🧩 **Automatic GitHub repo creation & push**
-- 🌐 **GitHub Pages deployment**
-- 🔁 **Update support** for Round 2 (smart regeneration)
-- 📬 **Evaluation callback** to instructor’s API with repo and live site details
+- 🧩 **Automatic GitHub repo creation & push**  
+- 🌐 **GitHub Pages deployment**  
+- 🔁 **Update support** for Round 2 (smart regeneration)  
+- 📬 **Evaluation callback** to instructor’s API with repo and live site details  
 
 ---
 
 ## 🧩 Project Structure
 
+```
 📦 TDS_P1_SEP_2025
-
-├── main.py # FastAPI backend for LLM-based app automation
-
-├── requirements.txt # Python dependencies
-
-├── Dockerfile # Container deployment file
-
-├── README.md # Project documentation
-
-└── .env # Environment variables (excluded from Git)(here txt file to show only)
-
+├── main.py             # FastAPI backend for LLM-based app automation
+├── requirements.txt    # Python dependencies
+├── Dockerfile          # Container deployment file
+├── README.md           # Project documentation
+└── .env (excluded from Git)  # Environment variables
+```
 
 ---
 
 ## ⚙️ Setup Instructions
 
-1️⃣ Clone the Repository
-
+### 1️⃣ Clone the Repository
+```bash
 git clone https://github.com/PAVAN2005-LAB/TDS_P1_SEP_2025.git
 cd TDS_P1_SEP_2025
+```
 
-2️⃣ Install Dependencies
- 
+### 2️⃣ Install Dependencies
+```bash
 pip install -r requirements.txt
+```
 
-3️⃣ Create a .env File
-
+### 3️⃣ Create a `.env` File
 Add the following keys:
 
+```bash
 GEMINI_API_KEY=your_gemini_api_key
-
 GITHUB_TOKEN=your_github_pat
-
 GITHUB_USERNAME=your_github_username
-
 STUDENT_SECRET=your_secret_value
+```
 
+> 💡 The `STUDENT_SECRET` should match the one you submitted in the Google Form.
 
-💡 The STUDENT_SECRET should match the one you submitted in the Google Form.
-
-4️⃣ Run the API Server
+### 4️⃣ Run the API Server
+```bash
 uvicorn main:app --reload --port 8000
+```
 
+API will run locally at:
 
-The API will run locally at:
+👉 **http://127.0.0.1:8000/api-endpoint**
 
-👉 http://127.0.0.1:8000/api-endpoint
-
-To expose it publicly for testing, use:
-
+To expose it publicly for testing:
+```bash
 ngrok http 8000
+```
 
-🧠 Example Request
-curl -X POST https://<your-ngrok-url>/api-endpoint \
-  -H "Content-Type: application/json" \
-  -d '{
+---
+
+## 🧠 Example Request
+```bash
+curl -X POST https://<your-ngrok-url>/api-endpoint   -H "Content-Type: application/json"   -d '{
     "email": "student@example.com",
     "task": "captcha-solver-123",
     "brief": "Create a simple web app that generates and validates CAPTCHAs.",
@@ -90,48 +88,45 @@ curl -X POST https://<your-ngrok-url>/api-endpoint \
     "nonce": "xyz123",
     "evaluation_url": "https://tds.project-server.edu/eval"
   }'
-
-
-
----
-🧩 What Happens Internally
-
-1️⃣ The POST request is received and validated.
-2️⃣ The brief is sent to Gemini / GPT for code generation.
-3️⃣ Files are stored locally and pushed to a new GitHub repository.
-4️⃣ GitHub Pages is enabled for live deployment.
-5️⃣ A callback POST is sent to the evaluation URL containing:
-
-Repo URL
-
-Commit SHA
-
-GitHub Pages URL
+```
 
 ---
-🔁 Round 2 (Update Mode)
 
-When the same task is sent again with "round": 2:
+## 🧩 **What Happens Internally**
 
-The system pulls the previous repo.
+1️⃣ The POST request is received and validated.  
+2️⃣ The brief is sent to Gemini / GPT for code generation.  
+3️⃣ Files are stored locally and pushed to a new GitHub repository.  
+4️⃣ GitHub Pages is enabled for live deployment.  
+5️⃣ A callback POST is sent to the evaluation URL containing:  
+   - Repo URL  
+   - Commit SHA  
+   - GitHub Pages URL  
 
-Generates updates using the LLM.
+---
 
-Pushes changes and re-deploys.
+## 🔁 Round 2 (Update Mode)
 
-Sends an updated evaluation callback.
+When the same task is sent again with `"round": 2`:  
 
-🧾 Example API Responses
+- The system pulls the previous repo.  
+- Generates updates using the LLM.  
+- Pushes changes and redeploys.  
+- Sends an updated evaluation callback.  
 
-From your endpoint:
+---
 
+## 🧾 Example API Responses
+
+**From your endpoint:**
+```json
 {
   "status": "accepted"
 }
+```
 
-
-Callback sent to evaluator:
-
+**Callback sent to evaluator:**
+```json
 {
   "email": "student@example.com",
   "task": "captcha-solver-123",
@@ -141,119 +136,103 @@ Callback sent to evaluator:
   "commit_sha": "d41d8cd9",
   "pages_url": "https://pavan2005-lab.github.io/captcha-solver-123/"
 }
+```
 
+---
 
+## 🧰 Tech Stack
 
+| Technology | Purpose |
+|-------------|----------|
+| Python 3.10+ | Core language |
+| FastAPI | REST backend |
+| httpx | Asynchronous HTTP client |
+| python-dotenv | Load environment variables |
+| Gemini / OpenAI API | LLM for code generation |
+| GitHub REST API | Repo creation + Pages deployment |
+| AsyncIO | Task concurrency |
+| Docker | Containerization (optional for Hugging Face) |
 
-----
-🧰 Tech Stack
-Technology	Purpose
-Python 3.10+	Core language
-FastAPI	REST backend
-httpx	Asynchronous HTTP client
-python-dotenv	Load environment variables
-Gemini / OpenAI API	LLM for code generation
-GitHub REST API	Repo creation + Pages deployment
-AsyncIO	Task concurrency
-Docker	Containerization for Hugging Face or local deploy
-🧑‍💻 Author
+---
 
-Pavan Kumar Yadav
-📘 Project: TDS_P1_SEP_2025
-🌐 GitHub: [@PAVAN2005-LAB]((https://github.com/PAVAN2005-LAB)
+## 🧑‍💻 Author
 
------
-🧩 Example Generated Project
-Markdown → HTML Converter (FastAPI + Hugging Face)
+**Pavan Kumar Yadav**  
+📘 Project: **TDS_P1_SEP_2025**  
+🌐 GitHub: [@PAVAN2005-LAB](https://github.com/PAVAN2005-LAB)
+
+---
+
+## 🧩 Example Generated Project
+
+### Markdown → HTML Converter (FastAPI + Hugging Face)
 
 An example of an app generated by the LLM Builder & Deployer system.
 
-🔗 [Repo:](https://github.com/PAVAN2005-LAB/markdown-to-html-001)
-
+🔗 [Repo](https://github.com/PAVAN2005-LAB/markdown-to-html-001)  
 🌍 [Live Page](https://pavan2005-lab.github.io/markdown-to-html-001/)
 
-
-This app converts Markdown text into HTML using FastAPI.
+This app converts Markdown text into HTML using FastAPI.  
 It’s lightweight, fast, and perfect for automation pipelines.
 
+---
 
------
+### 🧠 Features
 
-🧠 Features
+- Converts Markdown to HTML instantly  
+- Simple FastAPI-based JSON API  
+- Deployed automatically on Hugging Face  
+- Fully open-source (MIT License)
 
-Converts Markdown to HTML instantly
+---
 
-Simple FastAPI-based JSON API
+### ⚙️ How It Works
 
-Deployed automatically on Hugging Face
-
-Fully open-source (MIT License)
-
-
-
-------------
-⚙️ How It Works
+```python
 @app.post("/convert")
 async def convert_markdown(request: Request):
     data = await request.json()
     md_text = data.get("markdown", "")
     html_output = markdown.markdown(md_text)
     return JSONResponse(content={"html": html_output})
+```
 
-
-------
-📥 Input:
-
+**📥 Input:**
+```json
 { "markdown": "# Hello World\nThis is a **bold** example." }
+```
 
-----
-📤 Output:
-
+**📤 Output:**
+```json
 { "html": "<h1>Hello World</h1><p>This is a <strong>bold</strong> example.</p>" }
+```
 
-🧪 Try It Yourself
-Swagger UI:
+**🧪 Try It Yourself:**
+🔗 [Swagger UI](https://pavan2005-lab-markdown-to-html-001.hf.space/docs)
 
-🔗 https://pavan2005-lab-markdown-to-html-001.hf.space/docs
+```bash
+curl -X POST https://pavan2005-lab-markdown-to-html-001.hf.space/convert   -H "Content-Type: application/json"   -d '{"markdown": "# Title\\nBold Text"}'
+```
 
-Via cURL:
-curl -X POST https://pavan2005-lab-markdown-to-html-001.hf.space/convert \
-  -H "Content-Type: application/json" \
-  -d '{"markdown": "# Title\Bold Text"}'
+---
 
+## ☁️ Hugging Face Deployment Steps
 
-----
-
-also can deploy on hugging face to call API 
-
-
-
-  ☁️ Hugging Face Deployment Steps
-
-1️⃣ Go to Hugging Face Spaces
- → Create a new Space
- 
-2️⃣ Choose FastAPI as the template
-
-
+1️⃣ Go to **[Hugging Face Spaces](https://huggingface.co/spaces)** → Create a new Space  
+2️⃣ Choose **FastAPI** as the template  
 3️⃣ Upload:
+   - `main.py`  
+   - `requirements.txt`  
+   - `Dockerfile` *(optional for runtime customization)*
+    
+4️⃣ Click **Deploy**  
+5️⃣ The API will be live at:
+   ```
+   https://pavan-yadav-sde-p1.hf.space/ready
+   ```
 
-main.py
+---
 
-requirements.txt
-
-Dockerfile (optional for runtime customization)
-4️⃣ Click Deploy
-
-
-5️⃣ it will looks like  API will be live at:
-🔗 [https://pavan-yadav-sde-p1.hf.space/ready](https://pavan-yadav-sde-p1.hf.space/ready)
-
-
-
-this repo, include mit lic so you can you it 
-
-
-note: this file main python code also included spint of code which can expose your scerect key 
-
-so, please remove that part(mention in main file itself )
+> 🛑 **Note:**  
+> The main Python file contains a snippet that can expose your **secret keys**.  
+> Please **remove or comment out** that part before deploying (it’s clearly marked in the main file/debuge serect).
