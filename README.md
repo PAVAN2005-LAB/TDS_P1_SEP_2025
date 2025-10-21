@@ -56,8 +56,11 @@ pip install -r requirements.txt
 Add the following keys:
 
 GEMINI_API_KEY=your_gemini_api_key
+
 GITHUB_TOKEN=your_github_pat
+
 GITHUB_USERNAME=your_github_username
+
 STUDENT_SECRET=your_secret_value
 
 
@@ -243,9 +246,14 @@ Dockerfile (optional for runtime customization)
 4️⃣ Click Deploy
 
 
-5️⃣ Your API will be live at:
+5️⃣ it will looks like  API will be live at:
 🔗 [https://pavan-yadav-sde-p1.hf.space/ready](https://pavan-yadav-sde-p1.hf.space/ready)
 
 
 
 this repo, include mit lic so you can you it 
+
+
+note: this file main python code also included spint of code which can expose your scerect key 
+
+so, please remove that part(mention in main file itself )
